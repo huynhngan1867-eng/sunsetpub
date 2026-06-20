@@ -1,0 +1,2187 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Seaside Bar Cafe - Quản Lý Đơn Giản</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --teal-dark: #2f7a73;
+        --teal-mid: #5fa39a;
+        --teal-light: #9fd0c7;
+        --teal-pale: #d9efeb;
+        --cream: #f3ece0;
+        --grey-card: #e6e6e4;
+        --grey-card-text: #5a5a58;
+        --white: #ffffff;
+        --text-dark: #233a37;
+        --text-muted: #6b7d7a;
+        --border: #cfe3df;
+        --radius-lg: 14px;
+        --radius-md: 10px;
+        --radius-sm: 6px;
+        --shadow: 0 4px 14px rgba(35, 58, 55, 0.08);
+        --font-display: "Dancing Script", cursive;
+        --font-body: "Quicksand", "Segoe UI", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html, body {
+        margin: 0;
+        font-family: var(--font-body);
+        font-weight: 500;
+        background: var(--cream);
+        color: var(--text-dark);
+        line-height: 1.5;
+      }
+      body {
+        padding: 12px;
+      }
+      .app {
+        max-width: 1180px;
+        margin: 0 auto;
+        background: var(--teal-pale);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .app-header {
+        background: var(--teal-light);
+        padding: 16px 16px 14px;
+        text-align: center;
+      }
+      .app-header h1 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 28px;
+        color: var(--text-dark);
+        font-weight: 700;
+      }
+      .app-header .subtitle {
+        margin: 2px 0 0;
+        font-size: 10px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--teal-dark);
+        font-weight: 600;
+      }
+      .app-body {
+        display: grid;
+        grid-template-columns: 1.05fr 1.3fr 1fr;
+        gap: 14px;
+        padding: 14px;
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .app-body {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          padding: 10px;
+        }
+        body {
+          padding: 6px;
+        }
+        .app-header h1 {
+          font-size: 24px;
+        }
+      }
+
+      .panel {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+      }
+      .panel h2 {
+        margin: 0 0 12px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        color: var(--text-dark);
+      }
+
+      /* ===== HISTORY BUTTON (LAYER 1) ===== */
+      .history-row {
+        margin-top: 12px;
+      }
+      .history-launch-btn {
+        position: relative;
+        width: 100%;
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 14px 12px;
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        color: var(--text-dark);
+        background: linear-gradient(135deg, var(--teal-pale), var(--teal-light));
+        cursor: pointer;
+        overflow: hidden;
+        transform: perspective(400px) rotateX(0deg);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+        box-shadow: 0 6px 0 #b9d8d2, 0 8px 14px rgba(35, 58, 55, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .history-launch-btn:active {
+        transform: perspective(400px) rotateX(8deg) translateY(4px);
+        box-shadow: 0 2px 0 #b9d8d2, 0 4px 8px rgba(35, 58, 55, 0.12);
+      }
+      .history-launch-btn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 30%,
+          rgba(255, 255, 255, 0.25) 50%,
+          rgba(255, 255, 255, 0) 70%
+        );
+        background-size: 200% 100%;
+        background-position: 150% 0;
+        transition: background-position 0.6s ease;
+      }
+      .history-launch-btn:hover::after {
+        background-position: -50% 0;
+      }
+
+      /* ===== TABLES ===== */
+      .zone-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .zone-card {
+        border: 1px solid var(--teal-light);
+        border-radius: var(--radius-sm);
+        background: var(--teal-pale);
+        padding: 14px 12px;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .zone-card .zone-name {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--text-dark);
+      }
+      .zone-card .zone-meta {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+      .zone-card .zone-occupied {
+        color: var(--teal-dark);
+        font-weight: 600;
+      }
+
+      .table-view-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .back-btn {
+        background: none;
+        border: none;
+        color: var(--teal-dark);
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        padding: 4px 0;
+      }
+      .zone-view-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+      .table-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        align-items: start;
+      }
+      @media (max-width: 480px) {
+        .table-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+        }
+      }
+
+      .table-btn {
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 9px;
+        text-align: left;
+        cursor: pointer;
+        background: var(--grey-card);
+        color: var(--grey-card-text);
+        line-height: 1.4;
+        width: 100%;
+      }
+      .table-btn .table-name {
+        display: block;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .table-btn .occ-tag {
+        display: block;
+        font-weight: 600;
+        font-size: 10px;
+        margin-top: 2px;
+      }
+      .table-btn .note {
+        display: block;
+        font-size: 10px;
+        font-weight: 500;
+        margin-top: 5px;
+        white-space: normal;
+        word-break: break-word;
+        line-height: 1.35;
+        color: var(--text-dark);
+        font-style: italic;
+        opacity: 0.85;
+      }
+      .table-btn .edit-note-btn {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--teal-dark);
+        background: none;
+        border: 1px solid var(--teal-light);
+        border-radius: 4px;
+        padding: 3px 8px;
+        cursor: pointer;
+        font-family: var(--font-body);
+      }
+      .table-btn.is-occupied {
+        background: var(--teal-light);
+        color: var(--text-dark);
+      }
+      .table-btn.is-selected {
+        background: var(--teal-dark);
+        color: var(--white);
+      }
+      .table-btn.is-selected .note {
+        color: var(--teal-pale);
+      }
+      .table-btn.is-selected .edit-note-btn {
+        color: var(--white);
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+
+      /* ===== MODAL BASE (shared) ===== */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(35, 58, 55, 0.4);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .modal-overlay.is-open {
+        display: flex;
+      }
+      .modal-box {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        padding: 18px 16px;
+        width: 360px;
+        max-width: 100%;
+        max-height: 86vh;
+        box-shadow: 0 8px 32px rgba(35, 58, 55, 0.18);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .modal-box h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+      .modal-box textarea {
+        width: 100%;
+        height: 80px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--text-dark);
+        resize: vertical;
+        background: var(--teal-pale);
+      }
+      .modal-box textarea:focus {
+        outline: 2px solid var(--teal-mid);
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+      .modal-btn {
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 9px 16px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: var(--font-body);
+      }
+      .modal-btn-cancel {
+        background: var(--grey-card);
+        color: var(--grey-card-text);
+      }
+      .modal-btn-save {
+        background: var(--teal-dark);
+        color: var(--white);
+      }
+      .modal-btn-clear {
+        background: var(--white);
+        border: 1px solid #e0b5b5;
+        color: #c0504d;
+      }
+
+      /* ===== HISTORY MODAL (LAYER 2 & 3) ===== */
+      .history-modal-box {
+        width: 420px;
+      }
+      .history-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .history-modal-header h3 {
+        flex: 1;
+        min-width: 0;
+      }
+      .history-clear-all-btn {
+        background: var(--white);
+        border: 1px solid #e0b5b5;
+        color: #c0504d;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        padding: 7px 10px;
+        cursor: pointer;
+        flex-shrink: 0;
+        font-family: var(--font-body);
+        white-space: nowrap;
+      }
+      .history-clear-all-btn:hover {
+        background: #fdf0f0;
+      }
+      .history-close-btn {
+        background: var(--grey-card);
+        border: none;
+        color: var(--grey-card-text);
+        font-size: 16px;
+        font-weight: 700;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        flex-shrink: 0;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+      .history-back-btn {
+        background: var(--teal-pale);
+        border: none;
+        color: var(--teal-dark);
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        padding: 6px 10px;
+        cursor: pointer;
+        flex-shrink: 0;
+        font-family: var(--font-body);
+      }
+      .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+        max-height: 60vh;
+        padding-right: 2px;
+      }
+      .history-list::-webkit-scrollbar {
+        width: 4px;
+      }
+      .history-list::-webkit-scrollbar-thumb {
+        background: var(--teal-light);
+        border-radius: 99px;
+      }
+      .history-empty {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 12px;
+        padding: 30px 0;
+      }
+      .history-card {
+        border: 1px solid var(--teal-light);
+        background: var(--teal-pale);
+        border-radius: var(--radius-sm);
+        padding: 11px 12px;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        width: 100%;
+        font-family: var(--font-body);
+      }
+      .history-card .hc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .history-card .hc-table {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--text-dark);
+      }
+      .history-card .hc-time {
+        font-size: 10px;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .history-card .hc-note {
+        font-size: 11px;
+        font-style: italic;
+        color: var(--text-muted);
+        opacity: 0.9;
+      }
+      .history-card .hc-total {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--teal-dark);
+        margin-top: 2px;
+      }
+      .history-detail-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 11px;
+        color: var(--text-muted);
+        background: var(--teal-pale);
+        border-radius: var(--radius-sm);
+        padding: 8px 10px;
+      }
+      .history-detail-meta b {
+        color: var(--text-dark);
+      }
+      .history-detail-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        overflow-y: auto;
+        max-height: 38vh;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 8px 0;
+      }
+      .history-detail-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        gap: 8px;
+      }
+      .history-detail-line .name {
+        font-weight: 600;
+        color: var(--text-dark);
+        flex: 1;
+        min-width: 0;
+      }
+      .history-detail-line .amount {
+        color: var(--text-dark);
+        white-space: nowrap;
+      }
+      .history-detail-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .history-detail-summary .row {
+        display: flex;
+        justify-content: space-between;
+      }
+      .history-detail-summary .total {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text-dark);
+        border-top: 1px solid var(--border);
+        margin-top: 4px;
+        padding-top: 6px;
+      }
+
+      /* ===== MENU ===== */
+      .menu-search {
+        position: relative;
+        margin-bottom: 10px;
+      }
+      .menu-search input {
+        width: 100%;
+        padding: 11px 12px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        font-size: 14px;
+        font-family: var(--font-body);
+        background: var(--teal-pale);
+        color: var(--text-dark);
+      }
+      .menu-search input::placeholder {
+        color: var(--text-muted);
+      }
+      .search-suggestions {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow);
+        z-index: 20;
+        max-height: 220px;
+        overflow-y: auto;
+        display: none;
+      }
+      .search-suggestions.is-open {
+        display: block;
+      }
+      .suggestion-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        cursor: pointer;
+        font-size: 13px;
+        border-bottom: 1px solid var(--border);
+      }
+      .suggestion-item:last-child {
+        border-bottom: none;
+      }
+      .suggestion-item:hover {
+        background: var(--teal-pale);
+      }
+      .suggestion-item .s-name {
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+      .suggestion-item .s-meta {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+      .suggestion-empty {
+        padding: 10px 12px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      /* Menu list — fixed height showing ~6 items, scroll for more */
+      .menu-list-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .menu-count-hint {
+        font-size: 10px;
+        color: var(--text-muted);
+        text-align: right;
+      }
+      .menu-list {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        /* Sized to show 6 simple rows; rows with extra inputs take more space
+           but the scroll behavior keeps things consistent on phones */
+        max-height: 348px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+      }
+      .menu-list::-webkit-scrollbar {
+        width: 4px;
+      }
+      .menu-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .menu-list::-webkit-scrollbar-thumb {
+        background: var(--teal-light);
+        border-radius: 99px;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--border);
+        gap: 8px;
+        flex-shrink: 0;
+        min-height: 58px;
+      }
+      .menu-item:last-child {
+        border-bottom: none;
+      }
+      .menu-item:hover {
+        background: var(--teal-pale);
+      }
+      .menu-item-name {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text-dark);
+        flex: 1;
+        min-width: 0;
+      }
+      .menu-item-sub {
+        font-size: 10px;
+        color: var(--text-muted);
+        display: block;
+        margin-top: 1px;
+      }
+      .menu-item.is-highlighted {
+        background: var(--teal-pale);
+      }
+      .add-btn {
+        background: var(--teal-pale);
+        border: 1px solid var(--teal-light);
+        color: var(--teal-dark);
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        padding: 8px 14px;
+        cursor: pointer;
+        font-size: 15px;
+        flex-shrink: 0;
+        font-family: var(--font-body);
+        line-height: 1;
+      }
+      .add-btn:hover {
+        background: var(--teal-light);
+      }
+      .menu-item-price-input {
+        width: 62px;
+        padding: 7px 6px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-family: var(--font-body);
+        color: var(--text-dark);
+        background: var(--white);
+        text-align: right;
+      }
+      .menu-item-qty-input {
+        width: 50px;
+        padding: 7px 6px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-family: var(--font-body);
+        color: var(--text-dark);
+        background: var(--white);
+        text-align: right;
+      }
+
+      /* ===== BILL ===== */
+      #panel-bill {
+        background: var(--teal-pale);
+      }
+      .bill-items {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+        max-height: 240px;
+        overflow-y: auto;
+      }
+      .bill-items::-webkit-scrollbar {
+        width: 4px;
+      }
+      .bill-items::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .bill-items::-webkit-scrollbar-thumb {
+        background: var(--teal-mid);
+        border-radius: 99px;
+      }
+      .bill-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        gap: 6px;
+        flex-shrink: 0;
+        padding: 7px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .bill-line:last-child {
+        border-bottom: none;
+      }
+      .bill-line .name {
+        font-weight: 600;
+        color: var(--text-dark);
+        flex: 1;
+        min-width: 0;
+      }
+      .bill-line .amount {
+        color: var(--text-dark);
+        white-space: nowrap;
+      }
+      .bill-line .remove-btn {
+        background: none;
+        border: none;
+        color: #b0c4c0;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 4px 4px;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+      .bill-line .remove-btn:hover {
+        color: #e05555;
+      }
+      .bill-empty {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 12px;
+        padding: 24px 0;
+      }
+      .bill-summary {
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .bill-summary .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 32px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .switch .slider {
+        position: absolute;
+        inset: 0;
+        background: #c3d8d4;
+        border-radius: 999px;
+        transition: background-color 0.2s;
+      }
+      .switch .slider::before {
+        content: "";
+        position: absolute;
+        height: 14px;
+        width: 14px;
+        left: 2px;
+        top: 2px;
+        background: var(--white);
+        border-radius: 50%;
+        transition: transform 0.2s;
+      }
+      .switch input:checked + .slider {
+        background: var(--teal-dark);
+      }
+      .switch input:checked + .slider::before {
+        transform: translateX(14px);
+      }
+      .bill-summary .total {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--text-dark);
+        border-top: 1px solid var(--border);
+        margin-top: 6px;
+        padding-top: 8px;
+      }
+      .fee-row .fee-toggle {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        cursor: pointer;
+        color: var(--text-muted);
+      }
+      .fee-row .fee-toggle input {
+        width: 14px;
+        height: 14px;
+        accent-color: var(--teal-dark);
+        cursor: pointer;
+      }
+      .fee-row.is-disabled span {
+        color: #aab8b5;
+      }
+      .bill-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .btn {
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 13px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: var(--font-body);
+      }
+      .btn-outline {
+        background: var(--white);
+        border: 1px solid var(--teal-mid);
+        color: var(--teal-dark);
+      }
+      .btn-primary {
+        background: var(--teal-dark);
+        color: var(--white);
+      }
+      .btn-danger {
+        background: var(--white);
+        border: 1px solid #e0b5b5;
+        color: #c0504d;
+      }
+      .no-table-hint {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-align: center;
+        padding: 6px 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <h1>Seaside Bar Cafe</h1>
+        <p class="subtitle">Quản Lý Đơn Giản</p>
+      </header>
+
+      <div class="app-body">
+        <!-- CỘT 1: BÀN -->
+        <section class="panel" id="panel-tables">
+          <h2>BÀN</h2>
+          <div class="zone-grid" id="zoneView"></div>
+          <div id="tableView" style="display: none">
+            <div class="table-view-header">
+              <button class="back-btn" id="btnBackToZones">
+                ‹ Quay lại khu vực
+              </button>
+              <span class="zone-view-title" id="zoneViewTitle"></span>
+            </div>
+            <div class="table-grid" id="tableGrid"></div>
+          </div>
+          <div class="history-row">
+            <button class="history-launch-btn" id="btnHistory">
+              XEM LỊCH SỬ
+            </button>
+          </div>
+        </section>
+
+        <!-- CỘT 2: MENU -->
+        <section class="panel" id="panel-menu">
+          <h2>MENU (BÀN <span id="menuTableNumber">—</span>)</h2>
+          <div class="menu-search">
+            <input
+              type="text"
+              id="menuSearchInput"
+              placeholder="Tìm món (vd: mojito, burger, coffee...)"
+            />
+            <div class="search-suggestions" id="searchSuggestions"></div>
+          </div>
+          <div class="menu-list-wrap">
+            <div class="menu-list" id="menuList"></div>
+            <div class="menu-count-hint" id="menuCountHint"></div>
+          </div>
+        </section>
+
+        <!-- CỘT 3: BILL -->
+        <section class="panel" id="panel-bill">
+          <h2>BILL (TABLE <span id="billTableNumber">—</span>)</h2>
+          <div class="bill-items" id="billItems">
+            <div class="bill-empty">
+              Chưa có món. Chọn bàn và thêm món từ menu.
+            </div>
+          </div>
+          <div class="bill-summary">
+            <div class="row">
+              <span>Subtotal:</span><span id="subtotal">0</span>
+            </div>
+            <div class="row fee-row" id="feeRow">
+              <label class="fee-toggle">
+                <input type="checkbox" id="feeToggle" checked />
+                <span>Transaction Fee (5%)</span>
+              </label>
+              <span id="service">0</span>
+            </div>
+            <div class="row total">
+              <span>Total:</span><span id="total">0</span>
+            </div>
+          </div>
+          <div class="bill-actions">
+            <button class="btn btn-danger" id="btnClear">✕ Clear Bill</button>
+            <button class="btn btn-primary" id="btnCheckout">
+              CALCULATE TOTAL &amp; CHECKOUT
+            </button>
+          </div>
+          <div class="no-table-hint" id="noTableHint" style="display:none">
+            Vui lòng chọn bàn trước khi thêm món.
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- NOTE MODAL -->
+    <div class="modal-overlay" id="noteModal">
+      <div class="modal-box">
+        <h3>Ghi chú bàn <span id="modalTableId"></span></h3>
+        <textarea
+          id="modalNoteInput"
+          placeholder="Nhập ghi chú (vd: khách quen, dị ứng tôm, cần ghế cao cho bé...)"
+        ></textarea>
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn-clear" id="modalClearBtn">
+            Xoá ghi chú
+          </button>
+          <button class="modal-btn modal-btn-cancel" id="modalCancelBtn">
+            Huỷ
+          </button>
+          <button class="modal-btn modal-btn-save" id="modalSaveBtn">
+            Lưu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY MODAL — LAYER 2: list of paid bills -->
+    <div class="modal-overlay" id="historyListModal">
+      <div class="modal-box history-modal-box">
+        <div class="history-modal-header">
+          <h3>Lịch sử thanh toán</h3>
+          <button class="history-clear-all-btn" id="historyClearAllBtn">🗑 Xoá tất cả</button>
+          <button class="history-close-btn" id="historyListCloseBtn">✕</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+
+    <!-- HISTORY MODAL — LAYER 3: detail of one paid bill -->
+    <div class="modal-overlay" id="historyDetailModal">
+      <div class="modal-box history-modal-box">
+        <div class="history-modal-header">
+          <button class="history-back-btn" id="historyDetailBackBtn">‹ Quay lại</button>
+          <button class="history-close-btn" id="historyDetailCloseBtn">✕</button>
+        </div>
+        <div class="history-detail-meta" id="historyDetailMeta"></div>
+        <div class="history-detail-list" id="historyDetailList"></div>
+        <div class="history-detail-summary" id="historyDetailSummary"></div>
+        <button class="modal-btn modal-btn-clear" id="historyDetailDeleteBtn" style="width:100%">
+          🗑 Xoá bill này
+        </button>
+      </div>
+    </div>
+
+    <!-- FIREBASE SDK (compat, namespaced) — for cross-device realtime sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+
+    <!-- Connection status badge, shown top-right while syncing -->
+    <div id="syncStatusBadge" style="
+      position: fixed; top: 8px; right: 8px; z-index: 200;
+      font-family: Quicksand, sans-serif; font-size: 11px; font-weight: 700;
+      padding: 5px 10px; border-radius: 999px; color: #fff;
+      background: #9aa6a3; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: background-color 0.2s;
+    ">Đang kết nối…</div>
+
+    <script>
+      // =========================================================
+      // FIREBASE INIT — Realtime Database for multi-device sync
+      // =========================================================
+      const firebaseConfig = {
+        apiKey: "AIzaSyCid0x9bMksB1Kv77eWXyTz5-pQBg0mRzY",
+        authDomain: "sunsetpub-d0db1.firebaseapp.com",
+        databaseURL: "https://sunsetpub-d0db1-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "sunsetpub-d0db1",
+        storageBucket: "sunsetpub-d0db1.firebasestorage.app",
+        messagingSenderId: "868131299885",
+        appId: "1:868131299885:web:c7a22c93323fc28e1d0ea4",
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      function setSyncBadge(state) {
+        // state: 'connecting' | 'online' | 'offline'
+        const el = document.getElementById("syncStatusBadge");
+        if (!el) return;
+        if (state === "online") {
+          el.textContent = "🟢 Đã đồng bộ";
+          el.style.backgroundColor = "#2f7a73";
+        } else if (state === "offline") {
+          el.textContent = "🔴 Mất kết nối";
+          el.style.backgroundColor = "#c0504d";
+        } else {
+          el.textContent = "🟡 Đang kết nối…";
+          el.style.backgroundColor = "#9aa6a3";
+        }
+      }
+      db.ref(".info/connected").on("value", (snap) => {
+        setSyncBadge(snap.val() === true ? "online" : "offline");
+      });
+
+      // =========================================================
+      // STORAGE KEYS
+      // =========================================================
+      const LS_ZONES_KEY = "seaside_zones_v1";
+      const LS_BILLS_KEY = "seaside_table_bills_v1"; // per-table active orders
+      const LS_FEE_KEY = "seaside_fee_toggle_v1";
+      const LS_HISTORY_KEY = "seaside_history_v1"; // paid bills log
+
+      const FEE_RATE = 0.05;
+      function formatAmount(n) {
+        return n.toLocaleString("en-US");
+      }
+      function formatTimestamp(ts) {
+        const d = new Date(ts);
+        const pad = (x) => String(x).padStart(2, "0");
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+      // Escape any user-typed text before inserting into innerHTML, to prevent
+      // stored XSS (e.g. someone typing a script tag into a table note).
+      function escapeHTML(str) {
+        if (str === null || str === undefined) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      // =========================================================
+      // BASE DATA (defaults — overridden by localStorage if present)
+      // =========================================================
+      const DEFAULT_ZONES = {
+        indoor: {
+          label: "Trong nhà",
+          tables: [
+            { id: "TN-1", occupied: false, note: "" },
+            { id: "TN-2", occupied: false, note: "" },
+            { id: "TN-3", occupied: false, note: "" },
+            { id: "TN-4", occupied: false, note: "" },
+            { id: "TN-5", occupied: false, note: "" },
+          ],
+        },
+        front: {
+          label: "Trước nhà",
+          tables: [
+            { id: "TR-1", occupied: false, note: "" },
+            { id: "TR-2", occupied: false, note: "" },
+            { id: "TR-3", occupied: false, note: "" },
+            { id: "TR-4", occupied: false, note: "" },
+            { id: "TR-5", occupied: false, note: "" },
+            { id: "TR-6", occupied: false, note: "" },
+          ],
+        },
+        beach: {
+          label: "Ngoài biển",
+          tables: [
+            { id: "NB-1", occupied: false, note: "" },
+            { id: "NB-2", occupied: false, note: "" },
+            { id: "NB-3", occupied: false, note: "" },
+            { id: "NB-4", occupied: false, note: "" },
+            { id: "NB-5", occupied: false, note: "" },
+            { id: "NB-6", occupied: false, note: "" },
+            { id: "NB-7", occupied: false, note: "" },
+            { id: "NB-8", occupied: false, note: "" },
+            { id: "NB-9", occupied: false, note: "" },
+          ],
+        },
+      };
+
+      const MENU_ITEMS = [
+        // Coffee
+        { name: "Black Coffee", price: 30 },
+        { name: "White Coffee", price: 35 },
+        { name: "Salt Coffee", price: 40 },
+        { name: "Coconut Coffee", price: 50 },
+        { name: "Caramel Coffee", price: 55 },
+        { name: "Vanilla Coffee", price: 55 },
+        // Juice
+        { name: "Lemon Juice", price: 35 },
+        { name: "Water Melon Juice", price: 35 },
+        { name: "Passionfruit Juice", price: 35 },
+        { name: "Pineapple Juice", price: 40 },
+        { name: "Orange Juice", price: 40 },
+        { name: "Mango Juice", price: 40 },
+        { name: "Fresh Coconut", price: 50 },
+        // Smoothie
+        { name: "Mango Smoothie", price: 50 },
+        { name: "Banana Smoothie", price: 50 },
+        { name: "Strawberry Smoothie", price: 50 },
+        { name: "Pineapple, Mango, Coconut Milk", price: 50 },
+        { name: "Mango, Passion", price: 50 },
+        { name: "Pineapple, Mango, Banana", price: 50 },
+        // Tea
+        { name: "English Breakfast Tea", price: 30 },
+        { name: "Strawberry Tea", price: 30 },
+        { name: "Lipton Tea", price: 30 },
+        { name: "Ginger Tea", price: 30 },
+        // Soft drinks
+        { name: "Coke", price: 25 },
+        { name: "Sprite", price: 25 },
+        { name: "Tonic", price: 25 },
+        { name: "Soda", price: 25 },
+        { name: "Redbull", price: 25 },
+        { name: "Fanta", price: 25 },
+        // Beer
+        { name: "Saigon Can", price: 30 },
+        { name: "Huda Bottle", price: 25 },
+        { name: "Larue Bottle", price: 25 },
+        { name: "Tiger Bottle", price: 35 },
+        // Spirits
+        { name: "Gin (shot)", price: 85 },
+        { name: "Rum (shot)", price: 85 },
+        { name: "Vodka (shot)", price: 85 },
+        { name: "Whisky (shot)", price: 85 },
+        { name: "Campari", price: 105 },
+        { name: "Jagermeister", price: 95 },
+        { name: "Gordon's", price: 75 },
+        { name: "Smirnoff", price: 75 },
+        { name: "Bacardi", price: 75 },
+        { name: "Jim Beam", price: 75 },
+        { name: "Jose Cuervo", price: 85 },
+        { name: "Cointreau", price: 85 },
+        { name: "Bailey's", price: 85 },
+        { name: "Malibu", price: 85 },
+        { name: "Black Label", price: 95 },
+        { name: "Maker's Mark", price: 95 },
+        // Wine
+        { name: "Sauvignon Blanc, Chile", price: 70 },
+        // Cocktails
+        { name: "Gimlet", price: 90 },
+        { name: "Mojito", price: 90 },
+        { name: "Whisky Sour", price: 90 },
+        { name: "Cosmopolitan", price: 90 },
+        { name: "Sex On The Beach", price: 90 },
+        { name: "Passionfruit Daiquiri", price: 90 },
+        { name: "Negroni", price: 100 },
+        { name: "Phin Martini", price: 100 },
+        { name: "Pina Colada", price: 100 },
+        { name: "PS I Love You", price: 100 },
+        { name: "Long Island Ice Tea", price: 100 },
+        { name: "Mai Tai", price: 100 },
+        { name: "Old Fashion", price: 100 },
+        { name: "Blue Hawaii", price: 100 },
+        { name: "Bloody Mary", price: 100 },
+        { name: "Margarita", price: 110 },
+        { name: "Singapore Sling", price: 110 },
+        { name: "Midori Splice", price: 110 },
+        { name: "Tequila Sunrise", price: 110 },
+        { name: "Japanese Slipper", price: 120 },
+        { name: "Aperol Spritz", price: 130 },
+        // Signature
+        { name: "Welcome To Sunset", price: 110 },
+        { name: "Beach Opera", price: 110 },
+        { name: "Gin Tropical", price: 110 },
+        { name: "Cham Tequila", price: 110 },
+        { name: "Love Of Street", price: 70 },
+        { name: "Fruit Punch", price: 75 },
+        { name: "Sunset Whisper", price: 75 },
+        // Water
+        { name: "Small Water", price: 10 },
+        { name: "Big Water", price: 20 },
+        // Breakfast
+        { name: "Scrambled Eggs with Toast", price: 60 },
+        { name: "Omelette (onion, tomato, cheese) with Toast", price: 60 },
+        { name: "Fried Eggs with Toast", price: 60 },
+        { name: "Boiled Eggs", price: 60 },
+        { name: "Bacon & Egg Sandwich", price: 70 },
+        { name: "Ham & Egg Sandwich", price: 70 },
+        { name: "Shrimp & Egg Sandwich", price: 70 },
+        { name: "Sausage & Egg Sandwich", price: 70 },
+        { name: "Chicken & Vegetable Bread", price: 70 },
+        { name: "Beef & Vegetable Bread", price: 70 },
+        { name: "Ham, Egg & Vegetable Bread", price: 70 },
+        { name: "Sausage & Vegetable Bread", price: 70 },
+        { name: "Noodle Soup with Beef or Chicken", price: 70 },
+        {
+          name: "Pancake with Banana / Pineapple / Mango & Chocolate",
+          price: 60,
+        },
+        { name: "Fresh Fruit", price: 60 },
+        { name: "Yogurt Fruit", price: 60 },
+        // Snacks
+        { name: "French Fries", price: 60 },
+        { name: "Crispy Eggplant", price: 70 },
+        { name: "Crispy Chicken", price: 90 },
+        { name: "Crispy Calamari", price: 90 },
+        { name: "Crispy Shrimp", price: 90 },
+        { name: "Crispy Fish", price: 90 },
+        { name: "Spring Rolls", price: 80 },
+        { name: "Fresh Spring Rolls with Shrimp", price: 80 },
+        { name: "Garlic Bread", price: 60 },
+        { name: "Bruschetta Cheese", price: 70 },
+        { name: "Bruschetta Seafood", price: 80 },
+        { name: "Bruschetta Sausage", price: 80 },
+        // Salads
+        { name: "Chicken Salad", price: 90 },
+        { name: "Tuna Salad", price: 90 },
+        { name: "Chef Salad", price: 90 },
+        { name: "Mango Salad with Shrimp", price: 90 },
+        // Desserts
+        {
+          name: "Crepe with Banana / Mango / Pineapple and Chocolate",
+          price: 70,
+        },
+        // Sandwiches
+        { name: "Vegetable Sandwich", price: 90 },
+        { name: "Ham Cheese Sandwich", price: 110 },
+        { name: "Tuna Sandwich", price: 110 },
+        { name: "Chicken Sandwich", price: 110 },
+        { name: "Club Sandwich", price: 130 },
+        // Burgers
+        { name: "Ham Cheese Burger", price: 110 },
+        { name: "Chicken Burger", price: 120 },
+        { name: "Fried Chicken Burger", price: 130 },
+        { name: "Beef Cheese Burger", price: 140 },
+        { name: "Fish Burger", price: 130 },
+        // Burritos
+        { name: "Chicken Burrito", price: 130 },
+        { name: "Fried Chicken Burrito", price: 130 },
+        { name: "Beef Burrito", price: 130 },
+        { name: "Seafood Burrito", price: 130 },
+        { name: "Tuna Burrito", price: 130 },
+        { name: "Bacon Burrito", price: 130 },
+        // Pasta
+        { name: "Vegetable Spaghetti", price: 90 },
+        { name: "Tomato Spaghetti", price: 90 },
+        { name: "Chicken Spaghetti", price: 120 },
+        { name: "Seafood Spaghetti", price: 120 },
+        { name: "Carbonara Spaghetti", price: 120 },
+        { name: "Bolognese Spaghetti", price: 120 },
+        // Potato
+        { name: "Mash Potato", price: 60 },
+        { name: "Baked Potato with Bacon", price: 120 },
+        { name: "Baked Potato with Chicken", price: 120 },
+        { name: "Baked Potato with Cheese", price: 120 },
+        // Soups
+        { name: "Pumpkin Soup", price: 60 },
+        { name: "Chicken Soup", price: 60 },
+        { name: "Seafood Soup", price: 60 },
+        { name: "Tofu & Mushroom Soup", price: 60 },
+        // Rice
+        { name: "Fried Rice With Eggs", price: 80 },
+        { name: "Fried Rice With Vegetables", price: 80 },
+        { name: "Fried Rice With Beef", price: 100 },
+        { name: "Fried Rice With Seafood", price: 100 },
+        { name: "Chicken Rice", price: 100 },
+        { name: "Indonesia Style Fried Rice", price: 100 },
+        // Noodles
+        { name: "Sauteed Noodle With Vegetable", price: 80 },
+        { name: "Sauteed Noodle With Chicken", price: 100 },
+        { name: "Sauteed Noodle With Beef", price: 100 },
+        { name: "Sauteed Noodle With Seafood", price: 110 },
+        { name: "Stir Fried Vermicelli With Vegetable", price: 80 },
+        { name: "Stir Fried Vermicelli With Chicken", price: 100 },
+        { name: "Stir Fried Vermicelli With Beef", price: 100 },
+        { name: "Stir Fried Vermicelli With Seafood", price: 110 },
+        { name: "Stir Fried Pho With Vegetable", price: 80 },
+        { name: "Stir Fried Pho With Chicken", price: 100 },
+        { name: "Stir Fried Pho With Beef", price: 100 },
+        { name: "Stir Fried Pho With Seafood", price: 110 },
+        // Vegetarian
+        { name: "Vegetable Spring Rolls", price: 70 },
+        { name: "Vegetable Fresh Spring Rolls", price: 70 },
+        { name: "Vegetable Salad", price: 70 },
+        { name: "Sauteed Mixed Vegetable", price: 70 },
+        { name: "Stir Fried Morning Glory With Garlic", price: 70 },
+        { name: "Stir Fried Bok Choy With Mushrooms", price: 70 },
+        { name: "Grilled Eggplant", price: 70 },
+        { name: "Eggplant in Clay Pot", price: 70 },
+        { name: "Tofu With Tomato Sauce", price: 70 },
+        { name: "Tofu in Clay Pot", price: 70 },
+        // Squid
+        { name: "Sauteed Squid with Sweet & Sour Sauce", price: 150 },
+        { name: "Sauteed Squid with Satay Sauce", price: 150 },
+        { name: "Steamed Squid with Ginger", price: 150 },
+        { name: "Grilled Squid", price: 150 },
+        // Shrimp
+        { name: "Sauteed Shrimp With Sweet & Sour Sauce", price: 130 },
+        { name: "Sauteed Shrimp with Cashew Nuts", price: 130 },
+        { name: "Garlic & Butter With Shrimp", price: 130 },
+        { name: "Steamed Shrimp", price: 130 },
+        { name: "Grilled Shrimp", price: 130 },
+        // Fish
+        { name: "Fish Salad", price: 130 },
+        { name: "Fish with Sweet & Sour Sauce", price: 130 },
+        { name: "Fish with Tomato Sauce", price: 130 },
+        { name: "Grilled Fish W/ Turmeric Sauce", price: 130 },
+        { name: "Steamed Fish with Ginger", price: 130 },
+        { name: "Fish in Clay Pot", price: 130 },
+        { name: "Braised Fish in Pineapple Sauce", price: 130 },
+        { name: "Fish With Garlic & Butter", price: 150 },
+        { name: "Fish With Passion Sauce", price: 150 },
+        { name: "Fish With Orange Sauce", price: 150 },
+        { name: "Grilled Fish With Lemongrass", price: 200 },
+        { name: "Fried Fish With Soya Sauce", price: 200 },
+        { name: "Fish with Sweet & Sour Sauce (whole)", price: 200 },
+        // Beef
+        { name: "Shaking Beef", price: 130 },
+        { name: "Beef Steak", price: 200 },
+        { name: "Beef Rolls With Cheese", price: 130 },
+        { name: "Sauteed Beef With Lemongrass & Chilli", price: 130 },
+        { name: "Sauteed Beef With Sweet & Sour Sauce", price: 130 },
+        { name: "Sauteed Beef With Vegetable", price: 130 },
+        { name: "Sauteed Beef With Green Pepper", price: 130 },
+        // Chicken
+        { name: "Sauteed Chicken With Sweet & Sour Sauce", price: 120 },
+        { name: "Sauteed Chicken with Cashew Nuts", price: 120 },
+        { name: "Sauteed Chicken With Lemongrass & Chilli", price: 120 },
+        { name: "Pan-Fried Chicken with French Fries", price: 140 },
+        { name: "Chicken With Honey Sauce", price: 140 },
+        { name: "Chicken With Mushroom Sauce", price: 140 },
+        { name: "Chicken Parmesan", price: 140 },
+        { name: "Grilled Chicken", price: 120 },
+        // Seafood Special — variable price
+        { name: "Steamed Lobster", price: 0, variable: true, hint: "giá/kg" },
+        { name: "Grilled Lobster", price: 0, variable: true, hint: "giá/kg" },
+        {
+          name: "Steamed Abalone (small)",
+          price: 900,
+          variableQty: true,
+          hint: "900/kg",
+        },
+        {
+          name: "Grilled Abalone (small)",
+          price: 900,
+          variableQty: true,
+          hint: "900/kg",
+        },
+        {
+          name: "Steamed Abalone (large)",
+          price: 1300,
+          variableQty: true,
+          hint: "1300/kg",
+        },
+        {
+          name: "Grilled Abalone (large)",
+          price: 1300,
+          variableQty: true,
+          hint: "1300/kg",
+        },
+        {
+          name: "Steamed Sea Crab with Lemongrass",
+          price: 0,
+          variable: true,
+          hint: "giá/kg",
+        },
+        {
+          name: "Sea Crab with Tamarind Sauce",
+          price: 0,
+          variable: true,
+          hint: "giá/kg",
+        },
+        { name: "Sea Cucumber", price: 300, variableQty: true, hint: "300/kg" },
+        { name: "Snail", price: 200, variableQty: true, hint: "200/kg" },
+        { name: "Grilled Scallop with Onion Sauce", price: 60 },
+        { name: "Grilled Scallop with Cheese", price: 60 },
+        { name: "Grilled Scallop with Garlic Butter", price: 60 },
+        {
+          name: "Fresh Oyster with Mustard",
+          price: 0,
+          variable: true,
+          hint: "nhập giá",
+        },
+        { name: "Grilled Oyster with Onion Sauce", price: 60 },
+        { name: "Grilled Oyster with Cheese", price: 60 },
+        { name: "Grilled Oyster with Garlic Butter", price: 60 },
+        // Combos
+        { name: "Combo 1", price: 300 },
+        { name: "Combo 2", price: 300 },
+        { name: "Combo 3", price: 700 },
+        { name: "Combo 4", price: 700 },
+      ];
+
+      // =========================================================
+      // PERSISTENCE — Firebase Realtime Database (shared across devices)
+      // Local variables (ZONES, TABLE_BILLS, HISTORY, feeOnSaved) stay as the
+      // in-memory "view" of the data. Firebase is the source of truth:
+      //   - persistXxx() writes local state up to Firebase
+      //   - onValue listeners write Firebase state down into local vars + re-render
+      // isApplyingRemoteUpdate guards against write-back loops when we're the
+      // one applying a remote change.
+      // =========================================================
+      let isApplyingRemoteUpdate = false;
+      let firebaseReady = false; // true once initial data has been loaded at least once
+
+      // Local in-memory state (filled in by Firebase listeners below)
+      let ZONES = JSON.parse(JSON.stringify(DEFAULT_ZONES));
+      let TABLE_BILLS = {};
+      let HISTORY = [];
+      let feeOnSaved = true;
+
+      function persistZones() {
+        if (isApplyingRemoteUpdate) return;
+        db.ref(LS_ZONES_KEY).set(ZONES).catch((e) => console.warn("Lỗi lưu Firebase (zones):", e));
+      }
+      function persistTableBills() {
+        if (isApplyingRemoteUpdate) return;
+        db.ref(LS_BILLS_KEY).set(TABLE_BILLS).catch((e) => console.warn("Lỗi lưu Firebase (bills):", e));
+      }
+      function persistHistory() {
+        if (isApplyingRemoteUpdate) return;
+        db.ref(LS_HISTORY_KEY).set(HISTORY).catch((e) => console.warn("Lỗi lưu Firebase (history):", e));
+      }
+      function persistFeeToggle(val) {
+        if (isApplyingRemoteUpdate) return;
+        db.ref(LS_FEE_KEY).set(val).catch((e) => console.warn("Lỗi lưu Firebase (fee):", e));
+      }
+
+      // ---- Realtime listeners: when any device changes data, every device updates ----
+      db.ref(LS_ZONES_KEY).on("value", (snap) => {
+        const val = snap.val();
+        isApplyingRemoteUpdate = true;
+        ZONES = val ? val : JSON.parse(JSON.stringify(DEFAULT_ZONES));
+        // Re-render whichever table/zone view is currently open
+        if (activeZoneKey && ZONES[activeZoneKey]) {
+          renderTableGrid();
+        } else {
+          renderZones();
+        }
+        isApplyingRemoteUpdate = false;
+        if (!firebaseReady) maybeFinishInitialLoad("zones");
+      });
+
+      db.ref(LS_BILLS_KEY).on("value", (snap) => {
+        const val = snap.val();
+        isApplyingRemoteUpdate = true;
+        TABLE_BILLS = val ? val : {};
+        renderBill();
+        isApplyingRemoteUpdate = false;
+        if (!firebaseReady) maybeFinishInitialLoad("bills");
+      });
+
+      db.ref(LS_HISTORY_KEY).on("value", (snap) => {
+        const val = snap.val();
+        isApplyingRemoteUpdate = true;
+        HISTORY = val ? val : [];
+        // If the history list (layer 2) is currently open, refresh it live
+        if (document.getElementById("historyListModal").classList.contains("is-open")) {
+          renderHistoryList();
+        }
+        // If layer 3 is open and the entry we're viewing got deleted elsewhere, close it
+        if (
+          historyDetailTarget &&
+          document.getElementById("historyDetailModal").classList.contains("is-open") &&
+          !HISTORY.find((h) => h.id === historyDetailTarget.id)
+        ) {
+          closeHistoryDetail();
+        }
+        isApplyingRemoteUpdate = false;
+        if (!firebaseReady) maybeFinishInitialLoad("history");
+      });
+
+      db.ref(LS_FEE_KEY).on("value", (snap) => {
+        const val = snap.val();
+        isApplyingRemoteUpdate = true;
+        feeOnSaved = val === null || val === undefined ? true : val;
+        const toggleEl = document.getElementById("feeToggle");
+        if (toggleEl) {
+          toggleEl.checked = !!feeOnSaved;
+          recalcBill();
+        }
+        isApplyingRemoteUpdate = false;
+        if (!firebaseReady) maybeFinishInitialLoad("fee");
+      });
+
+      const _initialLoadFlags = { zones: false, bills: false, history: false, fee: false };
+      function maybeFinishInitialLoad(which) {
+        _initialLoadFlags[which] = true;
+        if (Object.values(_initialLoadFlags).every(Boolean)) {
+          firebaseReady = true;
+        }
+      }
+
+      // =========================================================
+      // STATE
+      // =========================================================
+      let activeZoneKey = null;
+      let activeTableId = null; // currently selected table id (e.g. "TN-1")
+
+      // Note modal state
+      let modalTarget = null; // { zoneKey, tableIdx }
+
+      // History modal state
+      let historyDetailTarget = null; // history entry currently shown in layer 3
+
+      // =========================================================
+      // ZONES & TABLES
+      // =========================================================
+      function renderZones() {
+        const el = document.getElementById("zoneView");
+        el.innerHTML = "";
+        Object.entries(ZONES).forEach(([key, zone]) => {
+          const occ = zone.tables.filter((t) => t.occupied).length;
+          const card = document.createElement("button");
+          card.className = "zone-card";
+          card.innerHTML = `
+      <span class="zone-name">${zone.label}</span>
+      <span class="zone-meta"><span class="zone-occupied">${occ}/${zone.tables.length}</span> bàn có khách</span>
+    `;
+          card.addEventListener("click", () => openZone(key));
+          el.appendChild(card);
+        });
+      }
+
+      function openZone(zoneKey) {
+        activeZoneKey = zoneKey;
+        const zone = ZONES[zoneKey];
+        document.getElementById("zoneView").style.display = "none";
+        document.getElementById("tableView").style.display = "block";
+        document.getElementById("zoneViewTitle").textContent = zone.label;
+        renderTableGrid();
+      }
+
+      function renderTableGrid() {
+        const zone = ZONES[activeZoneKey];
+        const grid = document.getElementById("tableGrid");
+        grid.innerHTML = "";
+        zone.tables.forEach((table, idx) => {
+          const btn = document.createElement("button");
+          btn.className =
+            "table-btn" +
+            (table.occupied ? " is-occupied" : "") +
+            (table.id === activeTableId ? " is-selected" : "");
+          btn.dataset.tableId = table.id;
+
+          btn.innerHTML = `
+      <span class="table-name">${table.id}</span>
+      <span class="occ-tag">${table.occupied ? "[Có khách]" : "[Trống]"}</span>
+      ${table.note ? `<span class="note">📝 ${escapeHTML(table.note)}</span>` : ""}
+      <button class="edit-note-btn" data-zone="${activeZoneKey}" data-idx="${idx}">✏ Ghi chú</button>
+    `;
+
+          // Select table (click on btn but not on note button)
+          btn.addEventListener("click", (e) => {
+            if (e.target.classList.contains("edit-note-btn")) return;
+            selectTable(table);
+          });
+
+          // Edit note button
+          btn.querySelector(".edit-note-btn").addEventListener("click", (e) => {
+            e.stopPropagation();
+            openNoteModal(activeZoneKey, idx);
+          });
+
+          grid.appendChild(btn);
+        });
+      }
+
+      function selectTable(table) {
+        activeTableId = table.id;
+        document.getElementById("menuTableNumber").textContent = table.id;
+        document.getElementById("billTableNumber").textContent = table.id;
+        document.getElementById("noTableHint").style.display = "none";
+        renderTableGrid(); // refresh highlight state
+        renderBill(); // load this table's own bill from memory
+      }
+
+      document
+        .getElementById("btnBackToZones")
+        .addEventListener("click", () => {
+          activeZoneKey = null;
+          document.getElementById("tableView").style.display = "none";
+          document.getElementById("zoneView").style.display = "flex";
+          renderZones();
+        });
+
+      // =========================================================
+      // NOTE MODAL
+      // =========================================================
+      function openNoteModal(zoneKey, tableIdx) {
+        modalTarget = { zoneKey, tableIdx };
+        const table = ZONES[zoneKey].tables[tableIdx];
+        document.getElementById("modalTableId").textContent = table.id;
+        document.getElementById("modalNoteInput").value = table.note || "";
+        document.getElementById("noteModal").classList.add("is-open");
+        document.getElementById("modalNoteInput").focus();
+      }
+
+      function closeNoteModal() {
+        document.getElementById("noteModal").classList.remove("is-open");
+        modalTarget = null;
+      }
+
+      document
+        .getElementById("modalCancelBtn")
+        .addEventListener("click", closeNoteModal);
+
+      document.getElementById("modalSaveBtn").addEventListener("click", () => {
+        if (!modalTarget) return;
+        const { zoneKey, tableIdx } = modalTarget;
+        const note = document.getElementById("modalNoteInput").value.trim();
+        ZONES[zoneKey].tables[tableIdx].note = note;
+        persistZones();
+        closeNoteModal();
+        renderTableGrid();
+        renderZones(); // update zone occupied counts
+      });
+
+      document.getElementById("modalClearBtn").addEventListener("click", () => {
+        if (!modalTarget) return;
+        const { zoneKey, tableIdx } = modalTarget;
+        ZONES[zoneKey].tables[tableIdx].note = "";
+        persistZones();
+        closeNoteModal();
+        renderTableGrid();
+      });
+
+      // Close modal on overlay click
+      document.getElementById("noteModal").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("noteModal")) closeNoteModal();
+      });
+
+      // =========================================================
+      // MENU — flat list, all items, scrollable (shows ~6 rows on phone)
+      // =========================================================
+      function renderMenu(filterItems) {
+        const list = document.getElementById("menuList");
+        list.innerHTML = "";
+        const items = filterItems || MENU_ITEMS;
+        document.getElementById("menuCountHint").textContent = filterItems
+          ? `${items.length} món phù hợp`
+          : `${items.length} món · cuộn để xem thêm`;
+        if (!items.length) {
+          list.innerHTML = `<div style="padding:14px;font-size:12px;color:var(--text-muted)">Không tìm thấy món phù hợp</div>`;
+          return;
+        }
+        items.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "menu-item";
+          row.dataset.name = item.name;
+
+          if (item.variable) {
+            row.innerHTML = `
+        <div style="flex:1;min-width:0">
+          <span class="menu-item-name">${item.name}</span>
+          <span class="menu-item-sub">${item.hint || "nhập giá & số lượng"}</span>
+        </div>
+        <input type="number" class="menu-item-price-input" placeholder="Giá" min="0" style="margin-right:4px" inputmode="decimal">
+        <input type="number" class="menu-item-qty-input" placeholder="Qty" min="0.1" step="0.1" value="1" inputmode="decimal">
+        <button class="add-btn" style="margin-left:6px">+</button>
+      `;
+            const pIn = row.querySelector(".menu-item-price-input");
+            const qIn = row.querySelector(".menu-item-qty-input");
+            row.querySelector(".add-btn").addEventListener("click", () => {
+              addToBill(
+                item.name,
+                parseFloat(pIn.value) || 0,
+                parseFloat(qIn.value) || 1,
+              );
+            });
+          } else if (item.variableQty) {
+            row.innerHTML = `
+        <div style="flex:1;min-width:0">
+          <span class="menu-item-name">${item.name}</span>
+          <span class="menu-item-sub">${item.hint || formatAmount(item.price) + "/kg"}</span>
+        </div>
+        <input type="number" class="menu-item-qty-input" placeholder="Kg" min="0.1" step="0.1" value="1" inputmode="decimal">
+        <button class="add-btn" style="margin-left:6px">+</button>
+      `;
+            const qIn = row.querySelector(".menu-item-qty-input");
+            row.querySelector(".add-btn").addEventListener("click", () => {
+              addToBill(item.name, item.price, parseFloat(qIn.value) || 1);
+            });
+          } else {
+            row.innerHTML = `
+        <span class="menu-item-name">${item.name} — ${formatAmount(item.price)}</span>
+        <button class="add-btn">+</button>
+      `;
+            row.querySelector(".add-btn").addEventListener("click", () => {
+              addToBill(item.name, item.price, 1);
+            });
+          }
+          list.appendChild(row);
+        });
+      }
+
+      // =========================================================
+      // SEARCH
+      // =========================================================
+      const searchInput = document.getElementById("menuSearchInput");
+      const suggestionsBox = document.getElementById("searchSuggestions");
+
+      searchInput.addEventListener("input", () => {
+        const q = searchInput.value.trim().toLowerCase();
+        suggestionsBox.classList.remove("is-open");
+        suggestionsBox.innerHTML = "";
+        if (!q) {
+          renderMenu();
+          return;
+        }
+        const matches = MENU_ITEMS.filter((i) =>
+          i.name.toLowerCase().includes(q),
+        );
+        renderMenu(matches);
+
+        // Show dropdown suggestions too
+        const top = matches.slice(0, 6);
+        if (!top.length) {
+          suggestionsBox.innerHTML = `<div class="suggestion-empty">Không tìm thấy món phù hợp</div>`;
+        } else {
+          top.forEach((item) => {
+            const row = document.createElement("div");
+            row.className = "suggestion-item";
+            row.innerHTML = `
+        <span class="s-name">${item.name}</span>
+        <span class="s-meta">${item.price ? formatAmount(item.price) : "—"}</span>
+      `;
+            row.addEventListener("click", () => {
+              searchInput.value = "";
+              suggestionsBox.classList.remove("is-open");
+              renderMenu();
+              setTimeout(() => {
+                const target = document.querySelector(
+                  `.menu-item[data-name="${CSS.escape(item.name)}"]`,
+                );
+                if (target) {
+                  target.classList.add("is-highlighted");
+                  target.scrollIntoView({ block: "nearest" });
+                  setTimeout(
+                    () => target.classList.remove("is-highlighted"),
+                    1500,
+                  );
+                }
+              }, 30);
+            });
+            suggestionsBox.appendChild(row);
+          });
+        }
+        suggestionsBox.classList.add("is-open");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".menu-search"))
+          suggestionsBox.classList.remove("is-open");
+      });
+
+      // =========================================================
+      // BILL — now keyed per table (own memory for each table)
+      // =========================================================
+      function getActiveBillLines() {
+        if (!activeTableId) return [];
+        if (!TABLE_BILLS[activeTableId]) TABLE_BILLS[activeTableId] = [];
+        return TABLE_BILLS[activeTableId];
+      }
+
+      function setTableOccupied(tableId, occupied) {
+        for (const zoneKey of Object.keys(ZONES)) {
+          const t = ZONES[zoneKey].tables.find((tt) => tt.id === tableId);
+          if (t) {
+            t.occupied = occupied;
+            break;
+          }
+        }
+        persistZones();
+      }
+
+      function findTableMeta(tableId) {
+        for (const zoneKey of Object.keys(ZONES)) {
+          const t = ZONES[zoneKey].tables.find((tt) => tt.id === tableId);
+          if (t) return t;
+        }
+        return null;
+      }
+
+      function addToBill(name, price, qty) {
+        if (!activeTableId) {
+          document.getElementById("noTableHint").style.display = "block";
+          return;
+        }
+        const lines = getActiveBillLines();
+        const existing = lines.find(
+          (l) =>
+            l.name === name &&
+            l.price === price &&
+            Number.isInteger(l.qty) &&
+            Number.isInteger(qty),
+        );
+        if (existing) {
+          existing.qty += qty;
+          existing.total = Math.round(existing.price * existing.qty);
+        } else {
+          lines.push({ name, price, qty, total: Math.round(price * qty) });
+        }
+        // Mark table occupied once it has at least one item
+        setTableOccupied(activeTableId, true);
+        renderTableGrid();
+        renderZones();
+        persistTableBills();
+        renderBill();
+      }
+
+      function renderBill() {
+        const container = document.getElementById("billItems");
+        container.innerHTML = "";
+
+        if (!activeTableId) {
+          container.innerHTML = `<div class="bill-empty">Chưa chọn bàn. Vui lòng chọn bàn ở cột bên trái.</div>`;
+          recalcBill();
+          return;
+        }
+
+        const lines = getActiveBillLines();
+        if (!lines.length) {
+          container.innerHTML = `<div class="bill-empty">Chưa có món. Chọn món từ menu để thêm vào bàn ${activeTableId}.</div>`;
+          recalcBill();
+          return;
+        }
+        lines.forEach((line, idx) => {
+          const el = document.createElement("div");
+          el.className = "bill-line";
+          el.dataset.amount = line.total;
+          const qtyDisplay = Number.isInteger(line.qty)
+            ? `x${line.qty}`
+            : `${line.qty}kg`;
+          el.innerHTML = `
+      <span class="name">${line.name}</span>
+      <span class="amount">${qtyDisplay} · ${formatAmount(line.total)}</span>
+      <button class="remove-btn" title="Remove">✕</button>
+    `;
+          el.querySelector(".remove-btn").addEventListener("click", () => {
+            lines.splice(idx, 1);
+            persistTableBills();
+            if (!lines.length) {
+              setTableOccupied(activeTableId, false);
+              renderTableGrid();
+              renderZones();
+            }
+            renderBill();
+          });
+          container.appendChild(el);
+        });
+        recalcBill();
+      }
+
+      function recalcBill() {
+        let subtotal = 0;
+        document
+          .querySelectorAll("#billItems .bill-line")
+          .forEach((l) => (subtotal += Number(l.dataset.amount)));
+        const feeOn = document.getElementById("feeToggle").checked;
+        const fee = feeOn ? Math.round(subtotal * FEE_RATE) : 0;
+        document.getElementById("subtotal").textContent =
+          formatAmount(subtotal);
+        document.getElementById("service").textContent = formatAmount(fee);
+        document.getElementById("total").textContent = formatAmount(
+          subtotal + fee,
+        );
+        document
+          .getElementById("feeRow")
+          .classList.toggle("is-disabled", !feeOn);
+      }
+
+      const feeToggleEl = document.getElementById("feeToggle");
+      feeToggleEl.checked = !!feeOnSaved;
+      feeToggleEl.addEventListener("change", () => {
+        persistFeeToggle(feeToggleEl.checked);
+        recalcBill();
+      });
+
+      document.getElementById("btnClear").addEventListener("click", () => {
+        if (!activeTableId) return;
+        const lines = getActiveBillLines();
+        if (lines.length && !confirm("Clear all items from the bill?"))
+          return;
+        TABLE_BILLS[activeTableId] = [];
+        persistTableBills();
+        setTableOccupied(activeTableId, false);
+        renderTableGrid();
+        renderZones();
+        renderBill();
+      });
+
+      document.getElementById("btnCheckout").addEventListener("click", () => {
+        if (!activeTableId) return;
+        const lines = getActiveBillLines();
+        if (!lines.length) return;
+
+        const subtotal = lines.reduce((sum, l) => sum + l.total, 0);
+        const feeOn = document.getElementById("feeToggle").checked;
+        const fee = feeOn ? Math.round(subtotal * FEE_RATE) : 0;
+        const total = subtotal + fee;
+        const tableMeta = findTableMeta(activeTableId);
+
+        // Save into history
+        HISTORY.unshift({
+          id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          tableId: activeTableId,
+          note: tableMeta ? tableMeta.note || "" : "",
+          lines: JSON.parse(JSON.stringify(lines)),
+          subtotal,
+          fee,
+          feeOn,
+          total,
+          paidAt: Date.now(),
+        });
+        persistHistory();
+
+        // Clear bill + free up the table
+        TABLE_BILLS[activeTableId] = [];
+        persistTableBills();
+        setTableOccupied(activeTableId, false);
+        renderTableGrid();
+        renderZones();
+        renderBill();
+
+        alert(`Checkout complete!\nBàn: ${activeTableId}\nTotal: ${formatAmount(total)}\n\nĐã lưu vào lịch sử. Bill đã được xoá, bàn về trạng thái Trống.`);
+      });
+
+      // =========================================================
+      // HISTORY — LAYER 1 (launch button), LAYER 2 (list), LAYER 3 (detail)
+      // =========================================================
+      function openHistoryList() {
+        renderHistoryList();
+        document.getElementById("historyListModal").classList.add("is-open");
+      }
+      function closeHistoryList() {
+        document.getElementById("historyListModal").classList.remove("is-open");
+      }
+      function renderHistoryList() {
+        const container = document.getElementById("historyList");
+        container.innerHTML = "";
+        if (!HISTORY.length) {
+          container.innerHTML = `<div class="history-empty">Chưa có giao dịch nào được thanh toán.</div>`;
+          return;
+        }
+        // Already sorted newest-first since we unshift on checkout,
+        // but sort defensively by paidAt descending.
+        const sorted = [...HISTORY].sort((a, b) => b.paidAt - a.paidAt);
+        sorted.forEach((entry) => {
+          const card = document.createElement("button");
+          card.className = "history-card";
+          card.innerHTML = `
+      <div class="hc-top">
+        <span class="hc-table">Bàn ${entry.tableId}</span>
+        <span class="hc-time">${formatTimestamp(entry.paidAt)}</span>
+      </div>
+      ${entry.note ? `<span class="hc-note">📝 ${escapeHTML(entry.note)}</span>` : ""}
+      <span class="hc-total">${formatAmount(entry.total)}</span>
+    `;
+          card.addEventListener("click", () => openHistoryDetail(entry));
+          container.appendChild(card);
+        });
+      }
+
+      function openHistoryDetail(entry) {
+        historyDetailTarget = entry;
+        document.getElementById("historyDetailMeta").innerHTML = `
+      <span><b>Bàn:</b> ${entry.tableId}</span>
+      <span><b>Thời gian:</b> ${formatTimestamp(entry.paidAt)}</span>
+      ${entry.note ? `<span><b>Ghi chú:</b> ${escapeHTML(entry.note)}</span>` : ""}
+    `;
+        const listEl = document.getElementById("historyDetailList");
+        listEl.innerHTML = "";
+        entry.lines.forEach((line) => {
+          const qtyDisplay = Number.isInteger(line.qty)
+            ? `x${line.qty}`
+            : `${line.qty}kg`;
+          const row = document.createElement("div");
+          row.className = "history-detail-line";
+          row.innerHTML = `
+        <span class="name">${line.name}</span>
+        <span class="amount">${qtyDisplay} · ${formatAmount(line.total)}</span>
+      `;
+          listEl.appendChild(row);
+        });
+        document.getElementById("historyDetailSummary").innerHTML = `
+      <div class="row"><span>Subtotal:</span><span>${formatAmount(entry.subtotal)}</span></div>
+      <div class="row"><span>Transaction Fee${entry.feeOn ? " (5%)" : " (off)"}:</span><span>${formatAmount(entry.fee)}</span></div>
+      <div class="row total"><span>Total:</span><span>${formatAmount(entry.total)}</span></div>
+    `;
+        document.getElementById("historyDetailModal").classList.add("is-open");
+      }
+
+      function closeHistoryDetail() {
+        document.getElementById("historyDetailModal").classList.remove("is-open");
+        historyDetailTarget = null;
+      }
+
+      function deleteHistoryEntry(entry) {
+        const confirm1 = confirm(
+          `Bạn chắc chắn muốn xoá bill bàn ${entry.tableId} (${formatTimestamp(entry.paidAt)}, tổng ${formatAmount(entry.total)})?\n\nHành động này không thể hoàn tác.`,
+        );
+        if (!confirm1) return;
+        const confirm2 = confirm(
+          "XÁC NHẬN LẦN CUỐI:\n\nSau khi xoá, dữ liệu bill này sẽ KHÔNG còn tồn tại và KHÔNG thể khôi phục lại được.\n\nBấm OK để xoá vĩnh viễn.",
+        );
+        if (!confirm2) return;
+
+        HISTORY = HISTORY.filter((h) => h.id !== entry.id);
+        persistHistory();
+        closeHistoryDetail();
+        renderHistoryList();
+      }
+
+      document.getElementById("btnHistory").addEventListener("click", openHistoryList);
+      document
+        .getElementById("historyListCloseBtn")
+        .addEventListener("click", closeHistoryList);
+      document.getElementById("historyListModal").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("historyListModal")) closeHistoryList();
+      });
+
+      document.getElementById("historyClearAllBtn").addEventListener("click", () => {
+        if (!HISTORY.length) {
+          alert("Không có lịch sử nào để xoá.");
+          return;
+        }
+        const confirm1 = confirm(
+          `Bạn chắc chắn muốn xoá TOÀN BỘ ${HISTORY.length} giao dịch trong lịch sử thanh toán?\n\nHành động này không thể hoàn tác.`,
+        );
+        if (!confirm1) return;
+        const confirm2 = confirm(
+          "XÁC NHẬN LẦN CUỐI:\n\nSau khi xoá, toàn bộ dữ liệu lịch sử này sẽ KHÔNG còn tồn tại và KHÔNG thể khôi phục lại được.\n\nBấm OK để xoá vĩnh viễn.",
+        );
+        if (!confirm2) return;
+
+        HISTORY = [];
+        persistHistory();
+        renderHistoryList();
+        alert("Đã xoá toàn bộ lịch sử thanh toán.");
+      });
+
+      document
+        .getElementById("historyDetailCloseBtn")
+        .addEventListener("click", closeHistoryDetail);
+      document
+        .getElementById("historyDetailBackBtn")
+        .addEventListener("click", closeHistoryDetail);
+      document.getElementById("historyDetailModal").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("historyDetailModal")) closeHistoryDetail();
+      });
+      document.getElementById("historyDetailDeleteBtn").addEventListener("click", () => {
+        if (!historyDetailTarget) return;
+        deleteHistoryEntry(historyDetailTarget);
+      });
+
+      // Mobile "back" gesture support: close topmost open modal on Escape
+      // (covers desktop back-like behavior; mobile back button triggers popstate via history API below)
+      window.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        if (document.getElementById("historyDetailModal").classList.contains("is-open")) {
+          closeHistoryDetail();
+        } else if (document.getElementById("historyListModal").classList.contains("is-open")) {
+          closeHistoryList();
+        } else if (document.getElementById("noteModal").classList.contains("is-open")) {
+          closeNoteModal();
+        }
+      });
+
+      // Use browser history so phone's hardware/gesture "back" closes modals instead of leaving the page
+      function pushModalState(name) {
+        history.pushState({ modal: name }, "");
+      }
+      window.addEventListener("popstate", (e) => {
+        if (document.getElementById("historyDetailModal").classList.contains("is-open")) {
+          closeHistoryDetail();
+          return;
+        }
+        if (document.getElementById("historyListModal").classList.contains("is-open")) {
+          closeHistoryList();
+          return;
+        }
+        if (document.getElementById("noteModal").classList.contains("is-open")) {
+          closeNoteModal();
+          return;
+        }
+      });
+
+      // Wrap open functions to push history state for back-button support
+      const _openHistoryList = openHistoryList;
+      openHistoryList = function () {
+        _openHistoryList();
+        pushModalState("historyList");
+      };
+      const _openHistoryDetailFn = openHistoryDetail;
+      openHistoryDetail = function (entry) {
+        _openHistoryDetailFn(entry);
+        pushModalState("historyDetail");
+      };
+      const _openNoteModalFn = openNoteModal;
+      openNoteModal = function (zoneKey, tableIdx) {
+        _openNoteModalFn(zoneKey, tableIdx);
+        pushModalState("note");
+      };
+      // Re-bind history button to use wrapped version
+      document.getElementById("btnHistory").replaceWith(
+        document.getElementById("btnHistory").cloneNode(true),
+      );
+      document.getElementById("btnHistory").addEventListener("click", () => openHistoryList());
+
+      // When closing via X / back-button click (not actual browser back), also pop the pushed state
+      function closeViaUI(closeFn) {
+        closeFn();
+        if (history.state && history.state.modal) {
+          history.back();
+        }
+      }
+      document.getElementById("historyListCloseBtn").replaceWith(
+        document.getElementById("historyListCloseBtn").cloneNode(true),
+      );
+      document.getElementById("historyListCloseBtn").addEventListener("click", () => closeViaUI(closeHistoryList));
+
+      document.getElementById("historyDetailCloseBtn").replaceWith(
+        document.getElementById("historyDetailCloseBtn").cloneNode(true),
+      );
+      document.getElementById("historyDetailCloseBtn").addEventListener("click", () => closeViaUI(closeHistoryDetail));
+
+      document.getElementById("historyDetailBackBtn").replaceWith(
+        document.getElementById("historyDetailBackBtn").cloneNode(true),
+      );
+      document.getElementById("historyDetailBackBtn").addEventListener("click", () => closeViaUI(closeHistoryDetail));
+
+      // =========================================================
+      // INIT
+      // =========================================================
+      renderZones();
+      renderMenu();
+      recalcBill();
+    </script>
+  </body>
+</html>
