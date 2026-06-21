@@ -1124,6 +1124,11 @@
               type="text"
               id="menuSearchInput"
               placeholder="Tìm món (vd: mojito, burger, coffee...)"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              name="menu-search-no-autofill"
             />
           </div>
           <div class="menu-list-wrap">
@@ -2078,6 +2083,11 @@
             input.step = isKg ? "0.1" : "1";
             input.value = line.qty;
             input.inputMode = "decimal";
+            input.autocomplete = "off";
+            input.setAttribute("autocorrect", "off");
+            input.setAttribute("autocapitalize", "off");
+            input.setAttribute("spellcheck", "false");
+            input.name = `qty-edit-${idx}-no-autofill`;
 
             amountEl.replaceChild(input, qtyDisplayEl);
             input.focus();
