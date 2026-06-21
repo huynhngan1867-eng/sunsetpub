@@ -141,9 +141,18 @@
         justify-content: center;
         gap: 8px;
       }
+      .history-launch-btn:hover {
+        background: linear-gradient(135deg, var(--teal-pale), var(--teal-mid));
+        transform: perspective(400px) rotateX(2deg) translateY(-1px);
+        box-shadow: 0 7px 0 #b9d8d2, 0 10px 16px rgba(35, 58, 55, 0.14);
+      }
       .history-launch-btn:active {
         transform: perspective(400px) rotateX(8deg) translateY(4px);
         box-shadow: 0 2px 0 #b9d8d2, 0 4px 8px rgba(35, 58, 55, 0.12);
+      }
+      .history-launch-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .history-launch-btn::after {
         content: "";
@@ -179,6 +188,19 @@
         display: flex;
         flex-direction: column;
         gap: 4px;
+        transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+      }
+      .zone-card:hover {
+        background: var(--teal-light);
+        border-color: var(--teal-mid);
+      }
+      .zone-card:active {
+        transform: scale(0.98);
+        background: var(--teal-mid);
+      }
+      .zone-card:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .zone-card .zone-name {
         font-weight: 700;
@@ -210,6 +232,19 @@
         font-size: 12px;
         cursor: pointer;
         padding: 4px 0;
+        border-radius: var(--radius-sm);
+        transition: color 0.15s ease, opacity 0.15s ease;
+      }
+      .back-btn:hover {
+        color: var(--text-dark);
+        text-decoration: underline;
+      }
+      .back-btn:active {
+        opacity: 0.6;
+      }
+      .back-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .zone-view-title {
         font-size: 12px;
@@ -239,6 +274,18 @@
         color: var(--grey-card-text);
         line-height: 1.4;
         width: 100%;
+        transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      }
+      .table-btn:hover {
+        background: #d8d8d5;
+        box-shadow: 0 2px 8px rgba(35, 58, 55, 0.1);
+      }
+      .table-btn:active {
+        transform: scale(0.98);
+      }
+      .table-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .table-btn .table-name {
         display: block;
@@ -275,14 +322,33 @@
         padding: 3px 8px;
         cursor: pointer;
         font-family: var(--font-body);
+        transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      }
+      .table-btn .edit-note-btn:hover {
+        background: var(--teal-light);
+        border-color: var(--teal-mid);
+      }
+      .table-btn .edit-note-btn:active {
+        background: var(--teal-mid);
+        color: var(--white);
+      }
+      .table-btn .edit-note-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .table-btn.is-occupied {
         background: var(--teal-light);
         color: var(--text-dark);
       }
+      .table-btn.is-occupied:hover {
+        background: #8cc4ba;
+      }
       .table-btn.is-selected {
         background: var(--teal-dark);
         color: var(--white);
+      }
+      .table-btn.is-selected:hover {
+        background: #266059;
       }
       .table-btn.is-selected .note {
         color: var(--teal-pale);
@@ -290,6 +356,12 @@
       .table-btn.is-selected .edit-note-btn {
         color: var(--white);
         border-color: rgba(255, 255, 255, 0.4);
+      }
+      .table-btn.is-selected .edit-note-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      .table-btn.is-selected .edit-note-btn:active {
+        background: rgba(255, 255, 255, 0.3);
       }
 
       /* ===== MODAL BASE (shared) ===== */
@@ -335,6 +407,10 @@
         color: var(--text-dark);
         resize: vertical;
         background: var(--teal-pale);
+        transition: outline-color 0.15s ease, border-color 0.15s ease;
+      }
+      .modal-box textarea:hover {
+        border-color: var(--teal-mid);
       }
       .modal-box textarea:focus {
         outline: 2px solid var(--teal-mid);
@@ -353,19 +429,38 @@
         font-size: 13px;
         cursor: pointer;
         font-family: var(--font-body);
+        transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      }
+      .modal-btn:active {
+        transform: scale(0.97);
+      }
+      .modal-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .modal-btn-cancel {
         background: var(--grey-card);
         color: var(--grey-card-text);
       }
+      .modal-btn-cancel:hover {
+        background: #d8d8d5;
+      }
       .modal-btn-save {
         background: var(--teal-dark);
         color: var(--white);
+      }
+      .modal-btn-save:hover {
+        background: #266059;
+        box-shadow: 0 2px 8px rgba(35, 58, 55, 0.2);
       }
       .modal-btn-clear {
         background: var(--white);
         border: 1px solid #e0b5b5;
         color: #c0504d;
+      }
+      .modal-btn-clear:hover {
+        background: #fdf0f0;
+        border-color: #c0504d;
       }
 
       /* ===== HISTORY MODAL (LAYER 2 & 3) ===== */
@@ -394,9 +489,19 @@
         flex-shrink: 0;
         font-family: var(--font-body);
         white-space: nowrap;
+        transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
       }
       .history-clear-all-btn:hover {
         background: #fdf0f0;
+        border-color: #c0504d;
+      }
+      .history-clear-all-btn:active {
+        transform: scale(0.96);
+        background: #fadede;
+      }
+      .history-clear-all-btn:focus-visible {
+        outline: 2px solid #c0504d;
+        outline-offset: 2px;
       }
       .history-close-btn {
         background: var(--grey-card);
@@ -414,6 +519,17 @@
         align-items: center;
         justify-content: center;
         padding: 0;
+        transition: background-color 0.15s ease, transform 0.1s ease;
+      }
+      .history-close-btn:hover {
+        background: #d8d8d5;
+      }
+      .history-close-btn:active {
+        transform: scale(0.92);
+      }
+      .history-close-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .history-back-btn {
         background: var(--teal-pale);
@@ -426,6 +542,18 @@
         cursor: pointer;
         flex-shrink: 0;
         font-family: var(--font-body);
+        transition: background-color 0.15s ease, transform 0.1s ease;
+      }
+      .history-back-btn:hover {
+        background: var(--teal-light);
+      }
+      .history-back-btn:active {
+        transform: scale(0.96);
+        background: var(--teal-mid);
+      }
+      .history-back-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .history-list {
         display: flex;
@@ -460,6 +588,18 @@
         gap: 3px;
         width: 100%;
         font-family: var(--font-body);
+        transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+      }
+      .history-card:hover {
+        background: var(--teal-light);
+        border-color: var(--teal-mid);
+      }
+      .history-card:active {
+        transform: scale(0.98);
+      }
+      .history-card:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .history-card .hc-top {
         display: flex;
@@ -562,6 +702,14 @@
         font-family: var(--font-body);
         background: var(--teal-pale);
         color: var(--text-dark);
+        transition: border-color 0.15s ease, outline-color 0.15s ease;
+      }
+      .menu-search input:hover {
+        border-color: var(--teal-mid);
+      }
+      .menu-search input:focus {
+        outline: 2px solid var(--teal-mid);
+        border-color: var(--teal-mid);
       }
       .menu-search input::placeholder {
         color: var(--text-muted);
@@ -587,16 +735,25 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 12px;
+        padding: 8px 10px 8px 12px;
         cursor: pointer;
         font-size: 13px;
         border-bottom: 1px solid var(--border);
+        gap: 8px;
+        transition: background-color 0.15s ease;
       }
       .suggestion-item:last-child {
         border-bottom: none;
       }
       .suggestion-item:hover {
         background: var(--teal-pale);
+      }
+      .suggestion-item .s-text {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+        cursor: pointer;
       }
       .suggestion-item .s-name {
         font-weight: 600;
@@ -610,6 +767,60 @@
         padding: 10px 12px;
         font-size: 12px;
         color: var(--text-muted);
+      }
+      .suggestion-add-btn {
+        background: var(--teal-pale);
+        border: 1px solid var(--teal-light);
+        color: var(--teal-dark);
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        padding: 6px 12px;
+        cursor: pointer;
+        font-size: 14px;
+        flex-shrink: 0;
+        font-family: var(--font-body);
+        line-height: 1;
+        transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+      }
+      .suggestion-add-btn:hover {
+        background: var(--teal-light);
+        border-color: var(--teal-mid);
+      }
+      .suggestion-add-btn:active {
+        transform: scale(0.92);
+        background: var(--teal-mid);
+        color: var(--white);
+      }
+      .suggestion-add-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
+      }
+      .suggestion-item-inputs {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+      .suggestion-price-input,
+      .suggestion-qty-input {
+        width: 50px;
+        padding: 5px 5px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 11px;
+        font-family: var(--font-body);
+        color: var(--text-dark);
+        background: var(--white);
+        text-align: right;
+        transition: border-color 0.15s ease, outline-color 0.15s ease;
+      }
+      .suggestion-price-input:hover,
+      .suggestion-qty-input:hover {
+        border-color: var(--teal-mid);
+      }
+      .suggestion-price-input:focus,
+      .suggestion-qty-input:focus {
+        outline: 2px solid var(--teal-mid);
       }
 
       /* Menu list — fixed height showing ~6 items, scroll for more */
@@ -653,6 +864,7 @@
         gap: 8px;
         flex-shrink: 0;
         min-height: 58px;
+        transition: background-color 0.15s ease;
       }
       .menu-item:last-child {
         border-bottom: none;
@@ -688,9 +900,21 @@
         flex-shrink: 0;
         font-family: var(--font-body);
         line-height: 1;
+        transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
       }
       .add-btn:hover {
         background: var(--teal-light);
+        border-color: var(--teal-mid);
+        box-shadow: 0 2px 6px rgba(35, 58, 55, 0.1);
+      }
+      .add-btn:active {
+        transform: scale(0.92);
+        background: var(--teal-mid);
+        color: var(--white);
+      }
+      .add-btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .menu-item-price-input {
         width: 62px;
@@ -702,6 +926,13 @@
         color: var(--text-dark);
         background: var(--white);
         text-align: right;
+        transition: border-color 0.15s ease, outline-color 0.15s ease;
+      }
+      .menu-item-price-input:hover {
+        border-color: var(--teal-mid);
+      }
+      .menu-item-price-input:focus {
+        outline: 2px solid var(--teal-mid);
       }
       .menu-item-qty-input {
         width: 50px;
@@ -713,6 +944,13 @@
         color: var(--text-dark);
         background: var(--white);
         text-align: right;
+        transition: border-color 0.15s ease, outline-color 0.15s ease;
+      }
+      .menu-item-qty-input:hover {
+        border-color: var(--teal-mid);
+      }
+      .menu-item-qty-input:focus {
+        outline: 2px solid var(--teal-mid);
       }
 
       /* ===== BILL ===== */
@@ -769,9 +1007,19 @@
         padding: 4px 4px;
         line-height: 1;
         flex-shrink: 0;
+        border-radius: 50%;
+        transition: color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
       }
       .bill-line .remove-btn:hover {
         color: #e05555;
+        background: #fdeaea;
+      }
+      .bill-line .remove-btn:active {
+        transform: scale(0.85);
+      }
+      .bill-line .remove-btn:focus-visible {
+        outline: 2px solid #e05555;
+        outline-offset: 1px;
       }
       .bill-empty {
         text-align: center;
@@ -811,6 +1059,10 @@
         background: #c3d8d4;
         border-radius: 999px;
         transition: background-color 0.2s;
+        cursor: pointer;
+      }
+      .switch .slider:hover {
+        background: #aecac5;
       }
       .switch .slider::before {
         content: "";
@@ -826,8 +1078,15 @@
       .switch input:checked + .slider {
         background: var(--teal-dark);
       }
+      .switch input:checked + .slider:hover {
+        background: #266059;
+      }
       .switch input:checked + .slider::before {
         transform: translateX(14px);
+      }
+      .switch input:focus-visible + .slider {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .bill-summary .total {
         font-size: 17px;
@@ -867,20 +1126,40 @@
         font-size: 13px;
         cursor: pointer;
         font-family: var(--font-body);
+        transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      }
+      .btn:active {
+        transform: scale(0.98);
+      }
+      .btn:focus-visible {
+        outline: 2px solid var(--teal-dark);
+        outline-offset: 2px;
       }
       .btn-outline {
         background: var(--white);
         border: 1px solid var(--teal-mid);
         color: var(--teal-dark);
       }
+      .btn-outline:hover {
+        background: var(--teal-pale);
+        border-color: var(--teal-dark);
+      }
       .btn-primary {
         background: var(--teal-dark);
         color: var(--white);
+      }
+      .btn-primary:hover {
+        background: #266059;
+        box-shadow: 0 4px 12px rgba(35, 58, 55, 0.25);
       }
       .btn-danger {
         background: var(--white);
         border: 1px solid #e0b5b5;
         color: #c0504d;
+      }
+      .btn-danger:hover {
+        background: #fdf0f0;
+        border-color: #c0504d;
       }
       .no-table-hint {
         font-size: 11px;
@@ -1773,11 +2052,15 @@
           top.forEach((item) => {
             const row = document.createElement("div");
             row.className = "suggestion-item";
-            row.innerHTML = `
+
+            // Text block (click = scroll to item in list below, same as before)
+            const textBlock = document.createElement("div");
+            textBlock.className = "s-text";
+            textBlock.innerHTML = `
         <span class="s-name">${item.name}</span>
         <span class="s-meta">${item.price ? formatAmount(item.price) : "—"}</span>
       `;
-            row.addEventListener("click", () => {
+            textBlock.addEventListener("click", () => {
               searchInput.value = "";
               suggestionsBox.classList.remove("is-open");
               renderMenu();
@@ -1795,6 +2078,59 @@
                 }
               }, 30);
             });
+            row.appendChild(textBlock);
+
+            // "+" control — adds straight to the active table's bill, same
+            // behavior/compatibility as the "+" buttons in the menu list
+            // (handles fixed-price, variable-price, and variable-qty items).
+            if (item.variable) {
+              const inputsWrap = document.createElement("div");
+              inputsWrap.className = "suggestion-item-inputs";
+              inputsWrap.innerHTML = `
+          <input type="number" class="suggestion-price-input" placeholder="Giá" min="0" inputmode="decimal">
+          <input type="number" class="suggestion-qty-input" placeholder="Qty" min="0.1" step="0.1" value="1" inputmode="decimal">
+          <button class="suggestion-add-btn" title="Thêm vào bill">+</button>
+        `;
+              const pIn = inputsWrap.querySelector(".suggestion-price-input");
+              const qIn = inputsWrap.querySelector(".suggestion-qty-input");
+              const addBtn = inputsWrap.querySelector(".suggestion-add-btn");
+              // Prevent clicks inside the inputs/button from bubbling to the
+              // text-block's "scroll to item" handler.
+              inputsWrap.addEventListener("click", (e) => e.stopPropagation());
+              addBtn.addEventListener("click", () => {
+                addToBill(
+                  item.name,
+                  parseFloat(pIn.value) || 0,
+                  parseFloat(qIn.value) || 1,
+                );
+              });
+              row.appendChild(inputsWrap);
+            } else if (item.variableQty) {
+              const inputsWrap = document.createElement("div");
+              inputsWrap.className = "suggestion-item-inputs";
+              inputsWrap.innerHTML = `
+          <input type="number" class="suggestion-qty-input" placeholder="Kg" min="0.1" step="0.1" value="1" inputmode="decimal">
+          <button class="suggestion-add-btn" title="Thêm vào bill">+</button>
+        `;
+              const qIn = inputsWrap.querySelector(".suggestion-qty-input");
+              const addBtn = inputsWrap.querySelector(".suggestion-add-btn");
+              inputsWrap.addEventListener("click", (e) => e.stopPropagation());
+              addBtn.addEventListener("click", () => {
+                addToBill(item.name, item.price, parseFloat(qIn.value) || 1);
+              });
+              row.appendChild(inputsWrap);
+            } else {
+              const addBtn = document.createElement("button");
+              addBtn.className = "suggestion-add-btn";
+              addBtn.title = "Thêm vào bill";
+              addBtn.textContent = "+";
+              addBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                addToBill(item.name, item.price, 1);
+              });
+              row.appendChild(addBtn);
+            }
+
             suggestionsBox.appendChild(row);
           });
         }
