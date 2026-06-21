@@ -555,6 +555,28 @@
         outline: 2px solid var(--teal-dark);
         outline-offset: 2px;
       }
+      .history-grand-total {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--teal-pale);
+        border: 1px solid var(--teal-light);
+        border-radius: var(--radius-sm);
+        padding: 10px 12px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+      .history-grand-total .hgt-label {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .history-grand-total .hgt-value {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--teal-dark);
+      }
       .history-list {
         display: flex;
         flex-direction: column;
@@ -1203,6 +1225,7 @@
           <button class="history-clear-all-btn" id="historyClearAllBtn">🗑 Xoá tất cả</button>
           <button class="history-close-btn" id="historyListCloseBtn">✕</button>
         </div>
+        <div class="history-grand-total" id="historyGrandTotal"></div>
         <div class="history-list" id="historyList"></div>
       </div>
     </div>
@@ -2229,6 +2252,20 @@
       function renderHistoryList() {
         const container = document.getElementById("historyList");
         container.innerHTML = "";
+
+        // Tổng tiền của TẤT CẢ giao dịch đã thanh toán trong lịch sử
+        const grandTotalEl = document.getElementById("historyGrandTotal");
+        if (!HISTORY.length) {
+          grandTotalEl.style.display = "none";
+        } else {
+          const grandTotal = HISTORY.reduce((sum, h) => sum + (h.total || 0), 0);
+          grandTotalEl.style.display = "flex";
+          grandTotalEl.innerHTML = `
+      <span class="hgt-label">Tổng cộng ${HISTORY.length} giao dịch</span>
+      <span class="hgt-value">${formatAmount(grandTotal)}</span>
+    `;
+        }
+
         if (!HISTORY.length) {
           container.innerHTML = `<div class="history-empty">Chưa có giao dịch nào được thanh toán.</div>`;
           return;
