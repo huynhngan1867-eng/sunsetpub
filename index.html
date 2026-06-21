@@ -714,114 +714,6 @@
       .menu-search input::placeholder {
         color: var(--text-muted);
       }
-      .search-suggestions {
-        position: absolute;
-        top: calc(100% + 4px);
-        left: 0;
-        right: 0;
-        background: var(--white);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        box-shadow: var(--shadow);
-        z-index: 20;
-        max-height: 220px;
-        overflow-y: auto;
-        display: none;
-      }
-      .search-suggestions.is-open {
-        display: block;
-      }
-      .suggestion-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 10px 8px 12px;
-        cursor: pointer;
-        font-size: 13px;
-        border-bottom: 1px solid var(--border);
-        gap: 8px;
-        transition: background-color 0.15s ease;
-      }
-      .suggestion-item:last-child {
-        border-bottom: none;
-      }
-      .suggestion-item:hover {
-        background: var(--teal-pale);
-      }
-      .suggestion-item .s-text {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-width: 0;
-        cursor: pointer;
-      }
-      .suggestion-item .s-name {
-        font-weight: 600;
-        color: var(--text-dark);
-      }
-      .suggestion-item .s-meta {
-        font-size: 11px;
-        color: var(--text-muted);
-      }
-      .suggestion-empty {
-        padding: 10px 12px;
-        font-size: 12px;
-        color: var(--text-muted);
-      }
-      .suggestion-add-btn {
-        background: var(--teal-pale);
-        border: 1px solid var(--teal-light);
-        color: var(--teal-dark);
-        font-weight: 700;
-        border-radius: var(--radius-sm);
-        padding: 6px 12px;
-        cursor: pointer;
-        font-size: 14px;
-        flex-shrink: 0;
-        font-family: var(--font-body);
-        line-height: 1;
-        transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
-      }
-      .suggestion-add-btn:hover {
-        background: var(--teal-light);
-        border-color: var(--teal-mid);
-      }
-      .suggestion-add-btn:active {
-        transform: scale(0.92);
-        background: var(--teal-mid);
-        color: var(--white);
-      }
-      .suggestion-add-btn:focus-visible {
-        outline: 2px solid var(--teal-dark);
-        outline-offset: 2px;
-      }
-      .suggestion-item-inputs {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        flex-shrink: 0;
-      }
-      .suggestion-price-input,
-      .suggestion-qty-input {
-        width: 50px;
-        padding: 5px 5px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        font-size: 11px;
-        font-family: var(--font-body);
-        color: var(--text-dark);
-        background: var(--white);
-        text-align: right;
-        transition: border-color 0.15s ease, outline-color 0.15s ease;
-      }
-      .suggestion-price-input:hover,
-      .suggestion-qty-input:hover {
-        border-color: var(--teal-mid);
-      }
-      .suggestion-price-input:focus,
-      .suggestion-qty-input:focus {
-        outline: 2px solid var(--teal-mid);
-      }
 
       /* Menu list — fixed height showing ~6 items, scroll for more */
       .menu-list-wrap {
@@ -997,6 +889,33 @@
       .bill-line .amount {
         color: var(--text-dark);
         white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .bill-line .qty-display {
+        cursor: pointer;
+        border-bottom: 1px dashed var(--teal-mid);
+        padding: 1px 2px;
+        border-radius: 3px;
+        transition: background-color 0.15s ease;
+      }
+      .bill-line .qty-display:hover {
+        background: var(--teal-light);
+      }
+      .bill-line .qty-edit-input {
+        width: 46px;
+        padding: 3px 4px;
+        border: 1px solid var(--teal-mid);
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        font-family: var(--font-body);
+        color: var(--text-dark);
+        background: var(--white);
+        text-align: right;
+      }
+      .bill-line .qty-edit-input:focus {
+        outline: 2px solid var(--teal-mid);
       }
       .bill-line .remove-btn {
         background: none;
@@ -1206,7 +1125,6 @@
               id="menuSearchInput"
               placeholder="Tìm món (vd: mojito, burger, coffee...)"
             />
-            <div class="search-suggestions" id="searchSuggestions"></div>
           </div>
           <div class="menu-list-wrap">
             <div class="menu-list" id="menuList"></div>
@@ -1998,6 +1916,7 @@
                 parseFloat(pIn.value) || 0,
                 parseFloat(qIn.value) || 1,
               );
+              resetMenuSearch();
             });
           } else if (item.variableQty) {
             row.innerHTML = `
@@ -2011,6 +1930,7 @@
             const qIn = row.querySelector(".menu-item-qty-input");
             row.querySelector(".add-btn").addEventListener("click", () => {
               addToBill(item.name, item.price, parseFloat(qIn.value) || 1);
+              resetMenuSearch();
             });
           } else {
             row.innerHTML = `
@@ -2019,6 +1939,7 @@
       `;
             row.querySelector(".add-btn").addEventListener("click", () => {
               addToBill(item.name, item.price, 1);
+              resetMenuSearch();
             });
           }
           list.appendChild(row);
@@ -2026,15 +1947,17 @@
       }
 
       // =========================================================
-      // SEARCH
+      // SEARCH — filters the menu list directly, no overlay suggestions
       // =========================================================
       const searchInput = document.getElementById("menuSearchInput");
-      const suggestionsBox = document.getElementById("searchSuggestions");
+
+      function resetMenuSearch() {
+        searchInput.value = "";
+        renderMenu();
+      }
 
       searchInput.addEventListener("input", () => {
         const q = searchInput.value.trim().toLowerCase();
-        suggestionsBox.classList.remove("is-open");
-        suggestionsBox.innerHTML = "";
         if (!q) {
           renderMenu();
           return;
@@ -2043,103 +1966,6 @@
           i.name.toLowerCase().includes(q),
         );
         renderMenu(matches);
-
-        // Show dropdown suggestions too
-        const top = matches.slice(0, 6);
-        if (!top.length) {
-          suggestionsBox.innerHTML = `<div class="suggestion-empty">Không tìm thấy món phù hợp</div>`;
-        } else {
-          top.forEach((item) => {
-            const row = document.createElement("div");
-            row.className = "suggestion-item";
-
-            // Text block (click = scroll to item in list below, same as before)
-            const textBlock = document.createElement("div");
-            textBlock.className = "s-text";
-            textBlock.innerHTML = `
-        <span class="s-name">${item.name}</span>
-        <span class="s-meta">${item.price ? formatAmount(item.price) : "—"}</span>
-      `;
-            textBlock.addEventListener("click", () => {
-              searchInput.value = "";
-              suggestionsBox.classList.remove("is-open");
-              renderMenu();
-              setTimeout(() => {
-                const target = document.querySelector(
-                  `.menu-item[data-name="${CSS.escape(item.name)}"]`,
-                );
-                if (target) {
-                  target.classList.add("is-highlighted");
-                  target.scrollIntoView({ block: "nearest" });
-                  setTimeout(
-                    () => target.classList.remove("is-highlighted"),
-                    1500,
-                  );
-                }
-              }, 30);
-            });
-            row.appendChild(textBlock);
-
-            // "+" control — adds straight to the active table's bill, same
-            // behavior/compatibility as the "+" buttons in the menu list
-            // (handles fixed-price, variable-price, and variable-qty items).
-            if (item.variable) {
-              const inputsWrap = document.createElement("div");
-              inputsWrap.className = "suggestion-item-inputs";
-              inputsWrap.innerHTML = `
-          <input type="number" class="suggestion-price-input" placeholder="Giá" min="0" inputmode="decimal">
-          <input type="number" class="suggestion-qty-input" placeholder="Qty" min="0.1" step="0.1" value="1" inputmode="decimal">
-          <button class="suggestion-add-btn" title="Thêm vào bill">+</button>
-        `;
-              const pIn = inputsWrap.querySelector(".suggestion-price-input");
-              const qIn = inputsWrap.querySelector(".suggestion-qty-input");
-              const addBtn = inputsWrap.querySelector(".suggestion-add-btn");
-              // Prevent clicks inside the inputs/button from bubbling to the
-              // text-block's "scroll to item" handler.
-              inputsWrap.addEventListener("click", (e) => e.stopPropagation());
-              addBtn.addEventListener("click", () => {
-                addToBill(
-                  item.name,
-                  parseFloat(pIn.value) || 0,
-                  parseFloat(qIn.value) || 1,
-                );
-              });
-              row.appendChild(inputsWrap);
-            } else if (item.variableQty) {
-              const inputsWrap = document.createElement("div");
-              inputsWrap.className = "suggestion-item-inputs";
-              inputsWrap.innerHTML = `
-          <input type="number" class="suggestion-qty-input" placeholder="Kg" min="0.1" step="0.1" value="1" inputmode="decimal">
-          <button class="suggestion-add-btn" title="Thêm vào bill">+</button>
-        `;
-              const qIn = inputsWrap.querySelector(".suggestion-qty-input");
-              const addBtn = inputsWrap.querySelector(".suggestion-add-btn");
-              inputsWrap.addEventListener("click", (e) => e.stopPropagation());
-              addBtn.addEventListener("click", () => {
-                addToBill(item.name, item.price, parseFloat(qIn.value) || 1);
-              });
-              row.appendChild(inputsWrap);
-            } else {
-              const addBtn = document.createElement("button");
-              addBtn.className = "suggestion-add-btn";
-              addBtn.title = "Thêm vào bill";
-              addBtn.textContent = "+";
-              addBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                addToBill(item.name, item.price, 1);
-              });
-              row.appendChild(addBtn);
-            }
-
-            suggestionsBox.appendChild(row);
-          });
-        }
-        suggestionsBox.classList.add("is-open");
-      });
-
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest(".menu-search"))
-          suggestionsBox.classList.remove("is-open");
       });
 
       // =========================================================
@@ -2168,6 +1994,17 @@
           if (t) return t;
         }
         return null;
+      }
+
+      // Clear a table's note (used right after checkout)
+      function clearTableNote(tableId) {
+        for (const zoneKey of Object.keys(ZONES)) {
+          const t = ZONES[zoneKey].tables.find((tt) => tt.id === tableId);
+          if (t) {
+            t.note = "";
+            break;
+          }
+        }
       }
 
       function addToBill(name, price, qty) {
@@ -2217,14 +2054,68 @@
           const el = document.createElement("div");
           el.className = "bill-line";
           el.dataset.amount = line.total;
-          const qtyDisplay = Number.isInteger(line.qty)
+          const qtyLabel = Number.isInteger(line.qty)
             ? `x${line.qty}`
             : `${line.qty}kg`;
           el.innerHTML = `
       <span class="name">${line.name}</span>
-      <span class="amount">${qtyDisplay} · ${formatAmount(line.total)}</span>
+      <span class="amount">
+        <span class="qty-display" title="Bấm để sửa số lượng">${qtyLabel}</span>
+        = ${formatAmount(line.total)}
+      </span>
       <button class="remove-btn" title="Remove">✕</button>
     `;
+
+          // Click qty to edit it inline
+          const qtyDisplayEl = el.querySelector(".qty-display");
+          qtyDisplayEl.addEventListener("click", () => {
+            const amountEl = el.querySelector(".amount");
+            const isKg = !Number.isInteger(line.qty);
+            const input = document.createElement("input");
+            input.type = "number";
+            input.className = "qty-edit-input";
+            input.min = isKg ? "0.1" : "1";
+            input.step = isKg ? "0.1" : "1";
+            input.value = line.qty;
+            input.inputMode = "decimal";
+
+            amountEl.replaceChild(input, qtyDisplayEl);
+            input.focus();
+            input.select();
+
+            const commit = () => {
+              let newQty = parseFloat(input.value);
+              if (!newQty || newQty <= 0) {
+                // Remove the line entirely if qty cleared to 0/invalid
+                lines.splice(idx, 1);
+                persistTableBills();
+                if (!lines.length) {
+                  setTableOccupied(activeTableId, false);
+                  renderTableGrid();
+                  renderZones();
+                }
+                renderBill();
+                return;
+              }
+              if (!isKg) newQty = Math.round(newQty);
+              line.qty = newQty;
+              line.total = Math.round(line.price * line.qty);
+              persistTableBills();
+              renderBill();
+            };
+
+            input.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commit();
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                renderBill();
+              }
+            });
+            input.addEventListener("blur", commit);
+          });
+
           el.querySelector(".remove-btn").addEventListener("click", () => {
             lines.splice(idx, 1);
             persistTableBills();
@@ -2303,15 +2194,16 @@
         });
         persistHistory();
 
-        // Clear bill + free up the table
+        // Clear bill, free up the table, and reset its note — all at once
         TABLE_BILLS[activeTableId] = [];
         persistTableBills();
+        clearTableNote(activeTableId);
         setTableOccupied(activeTableId, false);
         renderTableGrid();
         renderZones();
         renderBill();
 
-        alert(`Checkout complete!\nBàn: ${activeTableId}\nTotal: ${formatAmount(total)}\n\nĐã lưu vào lịch sử. Bill đã được xoá, bàn về trạng thái Trống.`);
+        alert(`Checkout complete!\nBàn: ${activeTableId}\nTotal: ${formatAmount(total)}\n\nĐã lưu vào lịch sử. Bill và ghi chú đã được xoá, bàn về trạng thái Trống.`);
       });
 
       // =========================================================
@@ -2367,7 +2259,7 @@
           row.className = "history-detail-line";
           row.innerHTML = `
         <span class="name">${line.name}</span>
-        <span class="amount">${qtyDisplay} · ${formatAmount(line.total)}</span>
+        <span class="amount">${qtyDisplay} = ${formatAmount(line.total)}</span>
       `;
           listEl.appendChild(row);
         });
